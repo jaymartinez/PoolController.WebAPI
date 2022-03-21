@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ILogger<MainController>, Logger<MainController>>();
 builder.Services.AddSingleton<IGpioController, GpioControllerWrapper>();
 builder.Services.AddScoped<IGpioService, GpioService>();
+builder.Services.AddSingleton<IAppRepository, AppRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

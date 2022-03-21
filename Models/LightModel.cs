@@ -9,9 +9,9 @@ namespace PoolController.WebAPI.Models
         public LightModeType CurrentMode { get; set; }
 
         [DataMember]
-        public LightModeType PreviousMode { get; set; }
+        public LightType LightType { get; set; }
 
         [DataMember]
-        public LightType LightType { get; set; }
+        public LightModeType? PreviousMode { get; set; }
     }
 }

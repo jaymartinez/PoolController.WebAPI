@@ -14,6 +14,7 @@
     /// </summary>
     public enum PinType : byte
     {
+        None = 0,
         PoolPump = 1,
         SpaPump = 2,
         BoosterPump = 3,

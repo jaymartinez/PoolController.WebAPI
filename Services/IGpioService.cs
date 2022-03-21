@@ -35,7 +35,39 @@ public interface IGpioService
     /// <summary>
     /// Save light mode for the pool or spa light.
     /// </summary>
-    /// <param name="lightType">Indicates whether to save the pool or spa light mode</param>
+    /// <param name="mode">The light mode to save</param>
+    /// <param name="lightType">Either the pool or spa</param>
     /// <returns><see cref="LightModel"/> object with updated <see cref="LightModel.CurrentMode"/> and <see cref="LightModel.PreviousMode"/></returns>
-    LightModel SaveLightMode(LightType lightType);
+    LightModel SaveLightMode(LightModeType mode, LightType lightType);
+
+    //var result = await _api.Get<Response<LightServerModel>>($"getCurrentLightMode?lightType={lightType}");
+    /// <summary>
+    /// Gets the currently active light mode for the passed in light type
+    /// </summary>
+    /// <param name="lightType">The <see cref="LightType"/> to get the current mode for</param>
+    /// <returns></returns>
+    LightModel GetCurrentLightMode(LightType lightType);
+
+    /// <summary>
+    /// Gets the <see cref="EquipmentSchedule"/> for the passed in type
+    /// </summary>
+    /// <param name="scheduleType">The <see cref="ScheduleType"/> to get the schedule for</param>
+    /// <returns>Fully populated schedule object</returns>
+    EquipmentSchedule GetSchedule(ScheduleType scheduleType);
+
+    /// <summary>
+    /// Sets the s
+    /// </summary>
+    /// <param name="schedule"></param>
+    /// <returns></returns>
+    EquipmentSchedule SetSchedule(EquipmentSchedule schedule);
+
+    //result = await _api.Get<Response<PiPin>>($"status?pinType={pinType}");
+
+    /// <summary>
+    /// Get the status for the passed in pin type
+    /// </summary>
+    /// <param name="pinType">The <see cref="PinType"/> to get the status for</param>
+    /// <returns>A fully populated <see cref="PiPin"/> object</returns>
+    PiPin GetEquipmentStatus(PinType pinType);
 }
