@@ -66,11 +66,18 @@ namespace PoolController.WebAPI.Services
                 GroundLights,
                 Heater
             };
+
+            /*
+            _timer = new Timer((a) =>
+            {
+
+            });
+            */
         }
 
         public void StartTimer()
         {
-            return;
+
         }
     }
 }

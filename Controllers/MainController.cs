@@ -7,7 +7,7 @@ using PoolController.WebAPI.Models;
 namespace PoolController.WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/mobile")]
     public class MainController : ControllerBase
     {
         readonly ILogger<MainController> _logger;
