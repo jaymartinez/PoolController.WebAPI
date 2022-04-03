@@ -100,26 +100,26 @@ namespace PoolController.WebAPI.Services
                     // They should both be the same but just read one then toggle both
                     if (Read(Pins.PoolPump_1) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.PoolPump_1, PinValue.Low);
-                        pin.PinState = Write(Pins.PoolPump_2, PinValue.Low);
+                        pin.PinValue = Write(Pins.PoolPump_1, PinValue.Low);
+                        pin.PinValue = Write(Pins.PoolPump_2, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.PoolPump_1, PinValue.High);
-                        pin.PinState = Write(Pins.PoolPump_2, PinValue.High);
+                        pin.PinValue = Write(Pins.PoolPump_1, PinValue.High);
+                        pin.PinValue = Write(Pins.PoolPump_2, PinValue.High);
                     }
 
                     break;
                 case PinType.SpaPump:
                     if (Read(Pins.SpaPump_1) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.SpaPump_1, PinValue.Low);
-                        pin.PinState = Write(Pins.SpaPump_2, PinValue.Low);
+                        pin.PinValue = Write(Pins.SpaPump_1, PinValue.Low);
+                        pin.PinValue = Write(Pins.SpaPump_2, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.SpaPump_1, PinValue.High);
-                        pin.PinState = Write(Pins.SpaPump_2, PinValue.High);
+                        pin.PinValue = Write(Pins.SpaPump_1, PinValue.High);
+                        pin.PinValue = Write(Pins.SpaPump_2, PinValue.High);
                     }
 
                     break;
@@ -127,58 +127,58 @@ namespace PoolController.WebAPI.Services
                 case PinType.BoosterPump:
                     if (Read(Pins.BoosterPump_1) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.BoosterPump_1, PinValue.Low);
-                        pin.PinState = Write(Pins.BoosterPump_2, PinValue.Low);
+                        pin.PinValue = Write(Pins.BoosterPump_1, PinValue.Low);
+                        pin.PinValue = Write(Pins.BoosterPump_2, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.BoosterPump_1, PinValue.High);
-                        pin.PinState = Write(Pins.BoosterPump_2, PinValue.High);
+                        pin.PinValue = Write(Pins.BoosterPump_1, PinValue.High);
+                        pin.PinValue = Write(Pins.BoosterPump_2, PinValue.High);
                     }
                     break;
                 case PinType.PoolLight:
                     if (Read(Pins.PoolLight) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.PoolLight, PinValue.Low);
+                        pin.PinValue = Write(Pins.PoolLight, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.PoolLight, PinValue.High);
+                        pin.PinValue = Write(Pins.PoolLight, PinValue.High);
                     }
                     break;
                 case PinType.SpaLight:
                     if (Read(Pins.SpaLight) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.SpaLight, PinValue.Low);
+                        pin.PinValue = Write(Pins.SpaLight, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.SpaLight, PinValue.High);
+                        pin.PinValue = Write(Pins.SpaLight, PinValue.High);
                     }
                     break;
                 case PinType.Heater:
                     if (Read(Pins.Heater) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.Heater, PinValue.Low);
+                        pin.PinValue = Write(Pins.Heater, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.Heater, PinValue.High);
+                        pin.PinValue = Write(Pins.Heater, PinValue.High);
                     }
                     break;
                 case PinType.GroundLights:
                     if (Read(Pins.GroundLights) == PinValue.High)
                     {
-                        pin.PinState = Write(Pins.GroundLights, PinValue.Low);
+                        pin.PinValue = Write(Pins.GroundLights, PinValue.Low);
                     }
                     else
                     {
-                        pin.PinState = Write(Pins.GroundLights, PinValue.High);
+                        pin.PinValue = Write(Pins.GroundLights, PinValue.High);
                     }
                     break;
             }
 
-            if (pin.PinState == PinValue.High)
+            if (pin.PinValue == PinValue.High)
             {
                 pin.DateActivated = DateTime.Now;
             }

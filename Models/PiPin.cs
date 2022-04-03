@@ -60,11 +60,11 @@ namespace PoolController.WebAPI.Models
         [DataMember]
         public DateTime? DateDeactivated { get; set; } = null;
 
-        [DataMember]
-        public PinValue PinState { get; set; } = PinValue.Low;
-
         [IgnoreDataMember]
-        public int StateValue => PinState == PinValue.High ? 1 : 0;
+        public PinValue PinValue { get; set; } = PinValue.Low;
+
+        [DataMember]
+        public PinState PinState => PinValue == PinValue.High ? PinState.On : PinState.Off;
 
         [IgnoreDataMember]
         public string Name

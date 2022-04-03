@@ -24,11 +24,19 @@ namespace PoolController.WebAPI.Controllers
             _appRepository = appRepository;
         }
 
-        [HttpGet(Name = "GetAllStatuses")]
-        public IEnumerable<PiPin> Get()
+        //[HttpGet("GetAllStatuses")]
+        [HttpGet, Route("status/all")]
+        public IEnumerable<PiPin> GetAllStatuses()
         {
             _logger.LogInformation("GETTING ALL STATUSES"); 
             return _appRepository.AllPins.ToArray();
+        }
+
+        [HttpGet("status/{type:int}")]
+        public PiPin GetPinStatus(PinType pinType)
+        {
+            _logger.LogInformation($"GETTING PIN {pinType} status");
+            return _gpioService.GetEquipmentStatus(pinType);
         }
     }
 }
