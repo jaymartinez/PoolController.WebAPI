@@ -22,21 +22,59 @@ namespace PoolController.WebAPI.Controllers
             _logger = logger;
             _gpioService = gpioService;
             _appRepository = appRepository;
+
+            var pinCount = _appRepository.AllModels.Count();
+
+            var now = DateTime.Now.ToString(@"%h\:mm\:ss");
+            _logger.LogInformation($"[{now}] MainController constructed, PINS INITIALIZED at this point is {pinCount}");
         }
 
-        //[HttpGet("GetAllStatuses")]
-        [HttpGet, Route("status/all")]
-        public IEnumerable<PiPin> GetAllStatuses()
+        [HttpGet("status")]
+        public ApiResult<List<PiPin>> GetAllStatuses()
         {
-            _logger.LogInformation("GETTING ALL STATUSES"); 
-            return _appRepository.AllPins.ToArray();
+            var now = DateTime.Now.ToString(@"%h\:mm\:ss");
+            _logger.LogInformation(new EventId(1), $"[{now}] GETTING ALL EQUIPMENT OBJECTS");
+
+            var result = new ApiResult<List<PiPin>>();
+            try
+            {
+                var allPins = _gpioService.GetAllStatuses().ToList();
+                result.Data = allPins;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                result.Messages.Add(ex.Message);
+            }
+
+            return result;
         }
 
         [HttpGet("status/{type:int}")]
-        public PiPin GetPinStatus(PinType pinType)
+        public ApiResult<PiPin> GetStatus(PinType type)
         {
-            _logger.LogInformation($"GETTING PIN {pinType} status");
-            return _gpioService.GetEquipmentStatus(pinType);
+            var now = DateTime.Now.ToString(@"%h\:mm\:ss");
+            _logger.LogInformation(new EventId(2), $"[{now}] GETTING PIN {type} status");
+
+            switch (type)
+            {
+                case PinType.PoolLight:
+                case PinType.PoolPump:
+                    return new ApiResult<PiPin>(_gpioService.GetPool());
+                case PinType.SpaLight:
+                case PinType.SpaPump:
+                    return new ApiResult<PiPin>(_gpioService.GetSpa());
+                case PinType.BoosterPump:
+                    return new ApiResult<PiPin>(_gpioService.GetBooster());
+                case PinType.GroundLights:
+                    return new ApiResult<PiPin>(_gpioService.GetGroundLights());
+                case PinType.Heater:
+                    return new ApiResult<PiPin>(_gpioService.GetHeater());
+            }
+
+            var result = new ApiResult<PiPin>();
+            result.Messages.Add($"[GetStatus] for pinType {type} failed with unknown error");
+            return result;
         }
     }
 }

@@ -19,65 +19,16 @@ namespace PoolController.WebAPI.Services
 
         public IEnumerable<PiPin> GetAllStatuses()
         {
-            return new List<PiPin>
-            {
-                _appRepository.PoolPump,
-                _appRepository.SpaPump,
-                _appRepository.BoosterPump,
-                _appRepository.PoolLight,
-                _appRepository.SpaLight,
-                _appRepository.GroundLights,
-                _appRepository.Heater,
-            };
+            return _appRepository.AllModels;
         }
 
-        public EquipmentSchedule GetSchedule(ScheduleType scheduleType)
-        {
-            switch (scheduleType)
-            {
-                case ScheduleType.Booster:
-                    return _appRepository.BoosterPumpSchedule;
-                case ScheduleType.Pool:
-                    return _appRepository.PoolPumpSchedule;
-                case ScheduleType.PoolLight:
-                    return _appRepository.PoolLightSchedule;
-                case ScheduleType.SpaLight:
-                    return _appRepository.SpaLightSchedule;
-                default:
-                    break;
-            }
-
-            throw new NotSupportedException();
-        }
-
-        public LightModel SaveLightMode(LightModeType mode, LightType lightType)
+        public LightModel SaveSpaLightMode(LightModeType lightMode)
         {
             try
             {
-                switch (lightType)
-                {
-                    case LightType.Pool:
-                        // Before saving, set the current pool light mode as the previous one
-                        _appRepository.PreviousPoolLightMode = _appRepository.PoolLightMode;
-                        _appRepository.PoolLightMode = mode;
-                        return new LightModel
-                        {
-                            CurrentMode = mode,
-                            PreviousMode = _appRepository.PreviousPoolLightMode,
-                            LightType = LightType.Pool
-                        };
-                    case LightType.Spa:
-                        _appRepository.PreviousSpaLightMode = _appRepository.SpaLightMode;
-                        _appRepository.SpaLightMode = mode;
-                        return new LightModel
-                        {
-                            CurrentMode = mode,
-                            PreviousMode = _appRepository.PreviousSpaLightMode,
-                            LightType = LightType.Spa
-                        };
-                    default:
-                        throw new NotSupportedException($"The light type {lightType.ToLightTypeString()} is not supported");
-                }
+                _appRepository.Spa.Light.PreviousMode = _appRepository.Spa.Light.CurrentMode;
+                _appRepository.Spa.Light.CurrentMode = lightMode;
+                return _appRepository.Spa.Light;
             }
             catch (Exception ex)
             {
@@ -86,116 +37,205 @@ namespace PoolController.WebAPI.Services
             }
         }
 
-        public PiPin Toggle(PinType pinType)
+        public LightModel SavePoolLightMode(LightModeType lightMode)
         {
-            var pin = _appRepository.AllPins.FirstOrDefault(_ => _.PinType == pinType);
-            if (pin == null)
+            try
             {
-                return new PiPin(pinType);
+                _appRepository.Pool.Light.PreviousMode = _appRepository.Pool.Light.CurrentMode;
+                _appRepository.Pool.Light.CurrentMode = lightMode;
+                return _appRepository.Pool.Light;
             }
-
-            switch (pinType)
+            catch (Exception ex)
             {
-                case PinType.PoolPump:
-                    // They should both be the same but just read one then toggle both
-                    if (Read(Pins.PoolPump_1) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.PoolPump_1, PinValue.Low);
-                        pin.PinValue = Write(Pins.PoolPump_2, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.PoolPump_1, PinValue.High);
-                        pin.PinValue = Write(Pins.PoolPump_2, PinValue.High);
-                    }
-
-                    break;
-                case PinType.SpaPump:
-                    if (Read(Pins.SpaPump_1) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.SpaPump_1, PinValue.Low);
-                        pin.PinValue = Write(Pins.SpaPump_2, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.SpaPump_1, PinValue.High);
-                        pin.PinValue = Write(Pins.SpaPump_2, PinValue.High);
-                    }
-
-                    break;
-
-                case PinType.BoosterPump:
-                    if (Read(Pins.BoosterPump_1) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.BoosterPump_1, PinValue.Low);
-                        pin.PinValue = Write(Pins.BoosterPump_2, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.BoosterPump_1, PinValue.High);
-                        pin.PinValue = Write(Pins.BoosterPump_2, PinValue.High);
-                    }
-                    break;
-                case PinType.PoolLight:
-                    if (Read(Pins.PoolLight) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.PoolLight, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.PoolLight, PinValue.High);
-                    }
-                    break;
-                case PinType.SpaLight:
-                    if (Read(Pins.SpaLight) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.SpaLight, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.SpaLight, PinValue.High);
-                    }
-                    break;
-                case PinType.Heater:
-                    if (Read(Pins.Heater) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.Heater, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.Heater, PinValue.High);
-                    }
-                    break;
-                case PinType.GroundLights:
-                    if (Read(Pins.GroundLights) == PinValue.High)
-                    {
-                        pin.PinValue = Write(Pins.GroundLights, PinValue.Low);
-                    }
-                    else
-                    {
-                        pin.PinValue = Write(Pins.GroundLights, PinValue.High);
-                    }
-                    break;
+                _logger.LogError(ex, ex.Message);
+                throw;
             }
-
-            if (pin.PinValue == PinValue.High)
-            {
-                pin.DateActivated = DateTime.Now;
-            }
-            else
-            {
-                pin.DateDeactivated = DateTime.Now;
-            }
-           
-            return pin;
         }
 
+        public bool Toggle(PinType pinType)
+        {
+            try
+            {
+                switch (pinType)
+                {
+                    case PinType.PoolPump:
+                        // They should both be the same but just read one then toggle both
+                        if (Read(Pins.PoolPump_1) == PinValue.High)
+                        {
+                            _appRepository.Pool.PinValue = Write(Pins.PoolPump_1, PinValue.Low);
+                            _appRepository.Pool.PinValue = Write(Pins.PoolPump_2, PinValue.Low);
+                            _appRepository.Pool.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.Pool.PinValue = Write(Pins.PoolPump_1, PinValue.High);
+                            _appRepository.Pool.PinValue = Write(Pins.PoolPump_2, PinValue.High);
+                            _appRepository.Pool.DateActivated = DateTime.Now;
+                        }
+
+                        break;
+                    case PinType.SpaPump:
+                        if (Read(Pins.SpaPump_1) == PinValue.High)
+                        {
+                            _appRepository.Spa.PinValue = Write(Pins.SpaPump_1, PinValue.Low);
+                            _appRepository.Spa.PinValue = Write(Pins.SpaPump_2, PinValue.Low);
+                            _appRepository.Spa.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.Spa.PinValue = Write(Pins.SpaPump_1, PinValue.High);
+                            _appRepository.Spa.PinValue = Write(Pins.SpaPump_2, PinValue.High);
+                            _appRepository.Spa.DateActivated = DateTime.Now;
+                        }
+
+                        break;
+
+                    case PinType.BoosterPump:
+                        if (Read(Pins.BoosterPump_1) == PinValue.High)
+                        {
+                            _appRepository.Booster.PinValue = Write(Pins.BoosterPump_1, PinValue.Low);
+                            _appRepository.Booster.PinValue = Write(Pins.BoosterPump_2, PinValue.Low);
+                            _appRepository.Booster.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.Booster.PinValue = Write(Pins.BoosterPump_1, PinValue.High);
+                            _appRepository.Booster.PinValue = Write(Pins.BoosterPump_2, PinValue.High);
+                            _appRepository.Booster.DateActivated = DateTime.Now;
+                        }
+                        break;
+                    case PinType.PoolLight:
+                        if (Read(Pins.PoolLight) == PinValue.High)
+                        {
+                            _appRepository.Pool.Light.PinValue = Write(Pins.PoolLight, PinValue.Low);
+                            _appRepository.Pool.Light.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.Pool.Light.PinValue = Write(Pins.PoolLight, PinValue.High);
+                            _appRepository.Pool.Light.DateActivated = DateTime.Now;
+                        }
+                        break;
+                    case PinType.SpaLight:
+                        if (Read(Pins.SpaLight) == PinValue.High)
+                        {
+                            _appRepository.Spa.Light.PinValue = Write(Pins.SpaLight, PinValue.Low);
+                            _appRepository.Spa.Light.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.Spa.Light.PinValue = Write(Pins.SpaLight, PinValue.High);
+                            _appRepository.Spa.Light.DateActivated = DateTime.Now;
+                        }
+                        break;
+                    case PinType.Heater:
+                        if (Read(Pins.Heater) == PinValue.High)
+                        {
+                            _appRepository.Heater.PinValue = Write(Pins.Heater, PinValue.Low);
+                            _appRepository.Heater.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.Heater.PinValue = Write(Pins.Heater, PinValue.High);
+                            _appRepository.Heater.DateActivated = DateTime.Now;
+                        }
+                        break;
+                    case PinType.GroundLights:
+                        if (Read(Pins.GroundLights) == PinValue.High)
+                        {
+                            _appRepository.GroundLights.PinValue = Write(Pins.GroundLights, PinValue.Low);
+                            _appRepository.GroundLights.DateDeactivated = DateTime.Now;
+                        }
+                        else
+                        {
+                            _appRepository.GroundLights.PinValue = Write(Pins.GroundLights, PinValue.High);
+                            _appRepository.GroundLights.DateActivated = DateTime.Now;
+                        }
+                        break;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+
+
+        public PoolModel GetPool()
+        {
+            return _appRepository.Pool;
+        }
+
+        public SpaModel GetSpa()
+        {
+            return _appRepository.Spa;
+        }
+
+        public BoosterPumpModel GetBooster()
+        {
+            return _appRepository.Booster;
+        }
+
+        public LightModel GetGroundLights()
+        {
+            return _appRepository.GroundLights;
+        }
+
+        public HeaterModel GetHeater()
+        {
+            return _appRepository.Heater;
+        }
+
+        public PoolModel SavePool(PoolModel poolModel)
+        {
+            _appRepository.Pool.Save(poolModel, true);
+            return _appRepository.Pool;
+        }
+
+        public SpaModel SaveSpa(SpaModel spaModel)
+        {
+            _appRepository.Spa.Save(spaModel, true);
+            return _appRepository.Spa;
+        }
+
+        public HeaterModel SaveHeater(HeaterModel heaterModel)
+        {
+            _appRepository.Heater.Save(heaterModel);
+            return _appRepository.Heater;
+        }
+
+        public BoosterPumpModel SaveBooster(BoosterPumpModel boosterPumpModel)
+        {
+            _appRepository.Booster.Save(boosterPumpModel, true);
+            return _appRepository.Booster;
+        }
+
+        public LightModel SaveGroundLights(LightModel groundLightsModel)
+        {
+            _appRepository.GroundLights.Save(groundLightsModel, true);
+            return _appRepository.GroundLights;
+        }
+
+        /// <summary>
+        /// Read the current value of a pin
+        /// </summary>
+        /// <param name="pinNumber">The pin to read the value of</param>
+        /// <returns></returns>
         public PinValue Read(int pinNumber)
         {
             return _gpio.Read(pinNumber);
         }
 
-        public PinValue Write(int pinNumber, PinValue valueToWrite)
+        /// <summary>
+        /// Writes the value to the pin and returns the final state of the pin
+        /// </summary>
+        /// <param name="pinNumber">Pin number to write to</param>
+        /// <param name="valueToWrite">The value to write, high or low</param>
+        /// <returns>The final pin value if the write was successful</returns>
+        PinValue Write(int pinNumber, PinValue valueToWrite)
         {
             try
             {
@@ -209,56 +249,6 @@ namespace PoolController.WebAPI.Services
             }
         }
 
-        public EquipmentSchedule SetSchedule(EquipmentSchedule schedule)
-        {
-            switch (schedule.Type)
-            {
-                case ScheduleType.Pool:
-                    _appRepository.PoolPumpSchedule = schedule;
-                    return GetSchedule(ScheduleType.Pool);
-                case ScheduleType.Booster:
-                    _appRepository.BoosterPumpSchedule = schedule;
-                    return GetSchedule(ScheduleType.Booster);
-                case ScheduleType.PoolLight:
-                    _appRepository.PoolLightSchedule = schedule;
-                    return GetSchedule(ScheduleType.PoolLight);
-                case ScheduleType.SpaLight:
-                    _appRepository.SpaLightSchedule = schedule;
-                    return GetSchedule(ScheduleType.SpaLight);
-            }
-
-            throw new NotSupportedException();
-        }
-
-        public LightModel GetCurrentLightMode(LightType lightType)
-        {
-            switch (lightType)
-            {
-                case LightType.Pool:
-                    return new LightModel
-                    {
-                        CurrentMode = _appRepository.PoolLightMode,
-                        LightType = lightType,
-                        PreviousMode = _appRepository.PreviousPoolLightMode
-                    };
-                case LightType.Spa:
-                    return new LightModel
-                    {
-                        CurrentMode = _appRepository.SpaLightMode,
-                        LightType = lightType,
-                        PreviousMode = _appRepository.PreviousSpaLightMode
-                    };
-                default:
-                    break;
-            }
-
-            throw new NotSupportedException();
-        }
-
-        public PiPin GetEquipmentStatus(PinType pinType)
-        {
-            return _appRepository.AllPins.FirstOrDefault(_ => _.PinType == pinType) ?? new PiPin();   
-        }
     }
 }
 

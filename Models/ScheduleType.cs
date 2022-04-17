@@ -9,6 +9,7 @@ namespace PoolController.WebAPI.Models
     /// <item><see cref="Pool"/>: 2</item>
     /// <item><see cref="PoolLight"/>: 3</item>
     /// <item><see cref="SpaLight"/>: 4</item>
+    /// <item><see cref="GroundLights"/>: 5</item>
     /// </list></code>
     /// </summary>
     public enum ScheduleType : byte
@@ -16,6 +17,7 @@ namespace PoolController.WebAPI.Models
         Booster = 1,
         Pool = 2,
         PoolLight = 3,
-        SpaLight = 4
+        SpaLight = 4,
+        GroundLights = 5,
     }
 }

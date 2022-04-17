@@ -8,90 +8,45 @@ namespace PoolController.WebAPI.Models
     {
         public PiPin() { }
 
-        public PiPin (PinType type)
+        public PiPin(int gpio1, PinType type, int? gpio2 = null)
         {
-            PinType = type;
-
-            switch (type)
-            {
-                case PinType.PoolPump:
-                    GpioPin1 = Pins.PoolPump_1;
-                    GpioPin2 = Pins.PoolPump_2;
-                    break;
-                case PinType.SpaPump:
-                    GpioPin1 = Pins.SpaPump_1;
-                    GpioPin2 = Pins.SpaPump_2;
-                    break;
-                case PinType.BoosterPump:
-                    GpioPin1 = Pins.BoosterPump_1;
-                    GpioPin2 = Pins.BoosterPump_2;
-                    break;
-                case PinType.PoolLight:
-                    GpioPin1 = Pins.PoolLight;
-                    break;
-                case PinType.SpaLight:
-                    GpioPin1 = Pins.SpaLight;
-                    break;
-                case PinType.GroundLights:
-                    GpioPin1 = Pins.GroundLights;
-                    break;
-                case PinType.Heater:
-                    GpioPin1 = Pins.Heater;
-                    break;
-                default:
-                    GpioPin1 = -1;
-                    break;
-            }
-
+            GpioPin1 = gpio1;
+            Type = type;
+            GpioPin2 = gpio2;
         }
 
-        [DataMember]
-        public int GpioPin1 { get; set; } = -1;
+        /// <summary>
+        /// Primary GPIO pin
+        /// </summary>
+        [DataMember(IsRequired = true)]
+        public int GpioPin1 { get; } = -1;
 
-        [DataMember]
-        public int? GpioPin2 { get; set; } = null;
+        /// <summary>
+        /// If applicable, the secondary GPIO pin. Some devices like the pool pump operate
+        /// on two 110v relays.
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        public int? GpioPin2 { get; } = null;
 
-        [DataMember]
-        public PinType PinType { get; set; } = PinType.None;
-
-        [DataMember]
+        /// <summary>
+        /// The <see cref="DateTime"/> the pin was set to high
+        /// </summary>
+        [DataMember(IsRequired = false)]
         public DateTime? DateActivated { get; set; } = null;
 
-        [DataMember]
+        /// <summary>
+        /// The <see cref="DateTime"/> the pin was set to low
+        /// </summary>
+        [DataMember(IsRequired = false)]
         public DateTime? DateDeactivated { get; set; } = null;
 
-        [IgnoreDataMember]
+        /// <summary>
+        /// State of the pin, either High or Low
+        /// </summary>
+        [DataMember(IsRequired = true)]
         public PinValue PinValue { get; set; } = PinValue.Low;
 
-        [DataMember]
-        public PinState PinState => PinValue == PinValue.High ? PinState.On : PinState.Off;
-
-        [IgnoreDataMember]
-        public string Name
-        {
-            get
-            {
-                switch (PinType)
-                {
-                    case PinType.PoolPump:
-                        return "Pool Pump";
-                    case PinType.BoosterPump:
-                        return "Booster Pump";
-                    case PinType.Heater:
-                        return "Heater";
-                    case PinType.PoolLight:
-                        return "Pool Light";
-                    case PinType.SpaLight:
-                        return "Spa Light";
-                    case PinType.GroundLights:
-                        return "Ground Lights";
-                    case PinType.SpaPump :
-                        return "Spa Pump";
-                    default:
-                        return "Unknown";
-                }
-            }
-        }
-
+        [DataMember(IsRequired = true)]
+        public PinType Type { get; } = PinType.Undefined;
     }
 }
